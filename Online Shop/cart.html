@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart</title>
+    <link rel="stylesheet" href="styles/style.css" />
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <style>
+        .admin {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.5rem;
+        }
+
+            .admin a {
+                display: block;
+                width: 90px;
+                text-decoration: none;
+                text-align: center;
+                padding: 9px 3px;
+                background-color: brown;
+                color: white;
+            }
+
+        .table {
+            width: 98%;
+            border: solid 1px lightgray;
+            border-collapse: collapse;
+        }
+
+            .table th, td {
+                padding: .5rem;
+                border: solid 1px lightgray;
+            }
+    </style>
+    <script>
+        $(() => {
+
+            var carts = sessionStorage.getItem("cart")
+                ? JSON.parse(sessionStorage.getItem("cart"))
+                : [];
+            var total = 0;
+            carts.forEach(c => {
+                total += Number(c.price) * Number(c.qty);
+                $('#tbody').append(`
+                    <tr>
+                            <td>${c.name}</td>
+                            <td>${c.price}</td>
+                            <td>${c.qty}</td>
+                            <td>${Number(c.price) * Number(c.qty)}</td>
+                        </tr>
+                    `);
+
+            });
+            $('#tbody').append(`
+                        <tr>
+                            <td colspan="3"></td>
+                            <td>${total}</td>
+                        </tr>
+                    `)
+
+        });
+    </script>
+</head>
+<body>
+    <nav id="nav">
+        <span class="logo"><img src="products/logo.png" alt="brand logo"></span>
+        <span class="brand">Mens Fashion</span>
+        <span class="fixer"> </span>
+        <ul>
+            <li><a href="index.html">FrontPage</a></li>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="admin.html">Admin</a></li>
+            <li><a href="contactus.html">ContactUs</a></li>
+        </ul>
+    </nav>
+
+    <div class="container main">
+
+        <h3>Your cart</h3>
+        <div class="my-2">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section customer-care">
+                <h4>Customer Care</h4>
+                <ul>
+                    <li><a href="#" style="color:white;">FAQ</a></li>
+                    <li><a href="#" style="color:white;">Shipping & Returns</a></li>
+                    <li><a href="#" style="color:white;">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact">
+                <h4>Contact</h4>
+                <address>
+                    US Software Ltd.<br>
+                    Dhaka, Panthapath 1205<br>
+                    Email: ussl@gmail.com<br>
+                    Phone: (123) 456-7890
+                </address>
+            </div>
+            <div class="footer-section follow-us">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/" target="_blank" style="color:white;"><img src="facebook-icon.png" alt="Facebook"></a>
+                    <a href="https://www.youtube.com/" target="_blank" style="color:white;"><img src="youtube-icon.png" alt="YouTube"></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <b>&copy; 2023 Mens Fashion</b>
+        </div>
+    </footer>
+</body>
+</html>

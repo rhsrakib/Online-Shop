@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContactUs</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <link rel='stylesheet' href='styles/js-snackbar.css' />
+    <script src="scripts/js-snackbar.js"></script>
+    <script src="node_modules/socket.io/client-dist/socket.io.js"></script>
+    <script src="node_modules/socketio-file-upload/client.js"></script>
+    <script>
+        $(() => {
+            var socket = io('http://localhost:8235');
+            socket.on('connect', () => {
+                var loader = new SocketIOFileUpload(socket);
+                loader.listenOnInput(document.getElementById("fu"))
+                loader.listenOnDrop(document.getElementById("drop"));
+                $('#pconnect').show();
+                $('#connect').click(() => {
+                    alert($('#dname').val())
+                    socket.emit('register', $('#dname').val());
+                });
+                $('#send').click(() => {
+                    var message = $('#msg').val(); // Get the message from the input field
+                    socket.emit('message', message); // Emit the message to the server
+                    $('#msg').val(''); // Clear the input field
+                });
+                $('#browse').click(() => {
+                    $('#fu').trigger('click');
+                });
+                socket.on('regsuccess', name => {
+                    //console.log(name);
+                    $("#hname").html(name);
+                    $('#pconnect').hide();
+                    $('#pchat').show();
+                });
+                socket.on('userlist', names => {
+                    console.log(names);
+                    $('#users').empty(),
+                        names.forEach(n => {
+                            $('#users').append(`<li>${n}</li>`);
+                        });
+                });
+                socket.on('message', m => {
+
+                    $('#messages').append(`<li>${m.from}: ${m.msg}</li>`);
+
+                });
+                socket.on('uploaded', m => {
+
+                    console.log(m);
+                    $('#files').append(`<figure>
+                                <img src="uploads/${m.type == 'image' ? m.file : 'file.png'}" />
+                                <figcaption>Uploaded by ${m.from}</figcaption>
+                                <a target='_blank' href="uploads/${m.file}">Download</a>
+                            </figure>`);
+                });
+                loader.addEventListener("complete", function (event) {
+                    console.log(event.success);
+                    SnackBar({
+                        message: `${event.file.name} uploaded`,
+                        position: "bc"
+                    });
+                });
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <nav id="nav">
+
+        <span class="logo"><img src="products/logo.png" alt="brand logo"></span>
+        <span class="brand">Mens Fashion</span>
+        <span class="fixer"></span>
+        <ul>
+            <li><a href="index.html">FrontPage</a></li>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="admin.html">Admin</a></li>
+            <li><a href="contactus.html">Chat</a></li>
+
+        </ul>
+    </nav>
+    <div class="container main">
+        <div id="pconnect" style="display: none;">
+            <input placeholder="Input your name..." type="text" id="dname" class="text-grow" /><button type="button" id="connect" class="btn">Connect</button>
+        </div>
+        <div id="pchat" style="display: none;" class="my-2">
+            <div class="c-1">
+                <div class='list-header'>Users</div>
+                <ul class='list' id="users">
+                </ul>
+            </div>
+            <div class="c-2">
+                <div><h3 id="hname"></h3></div>
+                <div class="flex">
+                    <input placeholder="message..." type="text" id="msg" class="text-grow" /><button type="button" id="send" class="btn">Send</button><button type="button" id="browse" class="btn">Browse</button>
+                </div>
+                <div id="drop" class="my-1">
+                    Drop files here
+                </div>
+                <div id="pmessages">
+                    <div class='list-header mt'>Messages</div>
+                    <ul class='list' id="messages"></ul>
+                </div>
+                <div id="files" class="files"></div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section customer-care">
+                <h4>Customer Care</h4>
+                <ul>
+                    <li><a href="#" style="color:white;">FAQ</a></li>
+                    <li><a href="#" style="color:white;">Shipping & Returns</a></li>
+                    <li><a href="#" style="color:white;">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact">
+                <h4>Contact</h4>
+                <address>
+                    US Software Ltd.<br>
+                    Dhaka, Panthapath 1205<br>
+                    Email: ussl@gmail.com<br>
+                    Phone: (123) 456-7890
+                </address>
+            </div>
+            <div class="footer-section follow-us">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/" target="_blank" style="color:white;"><img src="facebook-icon.png" alt="Facebook"></a>
+                    <a href="https://www.youtube.com/" target="_blank" style="color:white;"><img src="youtube-icon.png" alt="YouTube"></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <b>&copy; 2023 Mens Fashion</b>
+        </div>
+    </footer>
+    <input type='file' id='fu' style='display:none;' />
+</body>
+</html>
